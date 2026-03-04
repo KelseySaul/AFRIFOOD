@@ -13,7 +13,7 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  
+
   // New state to store IDs of recipes the user has liked
   const [userLikedIds, setUserLikedIds] = useState(new Set());
 
@@ -21,13 +21,13 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
   const lastRecipeElementRef = useCallback(node => {
     if (loading || loadingMore) return;
     if (observer.current) observer.current.disconnect();
-    
+
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore && activeFilter === 'All' && !searchQuery) {
         setPage(prevPage => prevPage + 1);
       }
     });
-    
+
     if (node) observer.current.observe(node);
   }, [loading, loadingMore, hasMore, activeFilter, searchQuery]);
 
@@ -41,7 +41,7 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
         .eq('user_id', userId);
 
       if (error) throw error;
-      
+
       // Store in a Set for ultra-fast O(1) lookups
       const likedSet = new Set(data.map(item => item.recipe_id));
       setUserLikedIds(likedSet);
@@ -86,8 +86,8 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
       .from('recipes')
       .select('*, categories(name, region)')
       .eq('status', 'approved')
-      .limit(10); 
-    
+      .limit(10);
+
     if (data) {
       const withLikes = await attachLikeCounts(data);
       const sorted = withLikes.sort((a, b) => b.like_count - a.like_count).slice(0, 5);
@@ -134,10 +134,10 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
     const dbRegion = (recipe.categories?.region || "Continental").toLowerCase();
     const activeBtn = (activeFilter || "All").toLowerCase();
 
-    const matchesCategory = 
-        activeBtn === 'all' || 
-        dbRegion.includes(activeBtn.replace('n', '')) || 
-        activeBtn.includes(dbRegion);
+    const matchesCategory =
+      activeBtn === 'all' ||
+      dbRegion.includes(activeBtn.replace('n', '')) ||
+      activeBtn.includes(dbRegion);
 
     return matchesCategory && title.includes(search);
   });
@@ -189,20 +189,20 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
             <h2 style={{ fontFamily: 'Playfair Display', fontSize: '1.6rem', color: '#1A120B', margin: 0 }}>Trending</h2>
             <div style={styles.trendBadge}>TOP 5 🔥</div>
           </div>
-          
+
           <div className="trending-container">
             {trending.map(recipe => (
-              <div 
-                key={`trend-${recipe.id}`} 
-                className="recipe-reel" 
+              <div
+                key={`trend-${recipe.id}`}
+                className="recipe-reel"
                 onClick={() => setSelectedRecipe(recipe)}
               >
                 <img src={recipe.image_url} style={styles.trendingImg} alt={recipe.title} />
-                
+
                 {recipe.location && (
-                    <div style={styles.locationTagFloat}>📍 {recipe.location}</div>
+                  <div style={styles.locationTagFloat}>📍 {recipe.location}</div>
                 )}
-                
+
                 <div style={styles.trendingOverlay}>
                   <span style={styles.regionSubTag}>
                     {recipe.categories?.region || 'Heritage'}
@@ -222,9 +222,9 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
           {filteredRecipes.map((recipe, index) => {
             const isLastElement = filteredRecipes.length === index + 1;
             return (
-              <div 
-                key={`feed-${recipe.id}`} 
-                ref={isLastElement ? lastRecipeElementRef : null} 
+              <div
+                key={`feed-${recipe.id}`}
+                ref={isLastElement ? lastRecipeElementRef : null}
                 className="recipe-card"
                 style={styles.card}
               >
@@ -236,10 +236,10 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <span style={styles.regionBadge}>{recipe.categories?.region}</span>
                     {/* Pass the liked status directly to prevent 406 errors */}
-                    <LikeButton 
-                      recipeId={recipe.id} 
-                      initialLikes={recipe.like_count} 
-                      userId={userId} 
+                    <LikeButton
+                      recipeId={recipe.id}
+                      initialLikes={recipe.like_count}
+                      userId={userId}
                       isInitiallyLiked={userLikedIds.has(recipe.id)}
                     />
                   </div>
@@ -277,31 +277,31 @@ const styles = {
   // ... (all your existing styles)
   trendingImg: { width: '100%', height: '100%', objectFit: 'cover' },
   trendBadge: { color: '#E2725B', border: '1px solid #E2725B', padding: '2px 8px', borderRadius: '4px', fontSize: '0.55rem', fontWeight: '900', letterSpacing: '2px' },
-  locationTagFloat: { 
-    position: 'absolute', 
-    top: '10px', 
-    left: '10px', 
-    background: 'rgba(255,255,255,0.2)', 
-    backdropFilter: 'blur(10px)', 
-    padding: '4px 8px', 
-    borderRadius: '8px', 
-    fontSize: '0.55rem', 
-    fontWeight: 'bold', 
+  locationTagFloat: {
+    position: 'absolute',
+    top: '10px',
+    left: '10px',
+    background: 'rgba(255,255,255,0.2)',
+    backdropFilter: 'blur(10px)',
+    padding: '4px 8px',
+    borderRadius: '8px',
+    fontSize: '0.55rem',
+    fontWeight: 'bold',
     color: '#fff',
     border: '1px solid rgba(255,255,255,0.2)'
   },
-  trendingOverlay: { 
-    position: 'absolute', 
-    bottom: 0, 
-    left: 0, 
-    right: 0, 
-    padding: '15px 12px', 
-    background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)', 
-    color: 'white', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    justifyContent: 'flex-end', 
-    height: '70%' 
+  trendingOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: '15px 12px',
+    background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
+    color: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    height: '70%'
   },
   reelTitle: { margin: '4px 0', fontSize: '0.9rem', fontFamily: 'Playfair Display', lineHeight: '1.2', fontWeight: '600' },
   regionSubTag: { fontSize: '0.55rem', fontWeight: '900', color: '#E2725B', textTransform: 'uppercase', letterSpacing: '1px' },

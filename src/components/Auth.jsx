@@ -47,24 +47,24 @@ export default function Auth() {
       <div style={styles.glassCard}>
         <h2 style={styles.title}>{isSignUp ? 'Join the Heritage' : 'Login'}</h2>
         <p style={styles.subtitle}>Preserving Africa's culinary secrets, one recipe at a time.</p>
-        
+
         <form onSubmit={handleAuth} style={styles.form}>
-          <input 
-            type="email" 
-            placeholder="Email Address" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            style={styles.input} 
-            required 
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+            required
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
+          <input
+            type="password"
+            placeholder="Password"
             // FIXED: Changed 'password' to 'e' to correctly access target.value
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            style={styles.input} 
-            required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+            required
           />
           <button disabled={loading} style={styles.submitBtn}>
             {loading ? 'Authenticating...' : (isSignUp ? 'Create Account' : 'Sign In')}

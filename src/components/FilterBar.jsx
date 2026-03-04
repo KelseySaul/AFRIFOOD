@@ -4,23 +4,23 @@ const REGIONS = ['All', 'West Africa', 'East Africa', 'North Africa', 'Southern 
 
 export default function FilterBar({ activeFilter, setActiveFilter, setSearchQuery }) {
   return (
-    <div style={{ 
-      position: 'sticky', 
+    <div style={{
+      position: 'sticky',
       top: '70px', // Adjusted for mobile-friendly nav height
-      zIndex: 90, 
-      background: 'var(--bg)', 
+      zIndex: 90,
+      background: 'var(--bg)',
       padding: '10px 0',
       borderBottom: '1px solid rgba(0,0,0,0.05)',
       width: '100%', // Ensure it stays within screen
       overflow: 'hidden' // Prevents bar from leaking out
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px' }}>
-        
+
         {/* Search Input - Optimized for Mobile Padding */}
         <div style={{ padding: '0 5px' }}>
-          <input 
-            type="text" 
-            placeholder="Search recipes..." 
+          <input
+            type="text"
+            placeholder="Search recipes..."
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
@@ -37,9 +37,9 @@ export default function FilterBar({ activeFilter, setActiveFilter, setSearchQuer
         </div>
 
         {/* Swipeable Region Pills */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '10px', 
+        <div style={{
+          display: 'flex',
+          gap: '10px',
           overflowX: 'auto', // Enables horizontal swipe
           padding: '5px 5px 15px 5px',
           scrollbarWidth: 'none', // Hides scrollbar (Firefox)
@@ -69,8 +69,8 @@ export default function FilterBar({ activeFilter, setActiveFilter, setSearchQuer
                 transition: 'all 0.2s ease',
                 background: activeFilter === region ? 'var(--accent)' : 'white',
                 color: activeFilter === region ? 'white' : 'var(--primary)',
-                boxShadow: activeFilter === region 
-                  ? '0 4px 12px rgba(226, 114, 91, 0.3)' 
+                boxShadow: activeFilter === region
+                  ? '0 4px 12px rgba(226, 114, 91, 0.3)'
                   : '0 2px 8px rgba(0,0,0,0.05)',
                 userSelect: 'none', // Prevents text selection while swiping
                 WebkitTapHighlightColor: 'transparent' // Removes blue box on tap

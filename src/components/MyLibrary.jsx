@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-export default function MyLibrary({ user, onClose }) {
+export default function MyLibrary({ user, onClose, onEditRecipe }) {
   const [recipes, setRecipes] = useState([]);
   const [blogs, setBlogs] = useState([]);
 
@@ -29,14 +29,17 @@ export default function MyLibrary({ user, onClose }) {
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <button onClick={onClose} style={styles.closeBtn}>✕</button>
-        <h2 style={{fontFamily: 'Playfair Display', marginBottom: '20px'}}>My Library</h2>
-        
+        <h2 style={{ fontFamily: 'Playfair Display', marginBottom: '20px' }}>My Library</h2>
+
         {/* RECIPES SECTION */}
         <h4 style={styles.sub}>RECIPES</h4>
         {recipes.length > 0 ? recipes.map(r => (
           <div key={r.id} style={styles.item}>
             <span style={styles.itemTitle}>{r.title}</span>
-            <button onClick={() => remove(r.id, 'recipes')} style={styles.del}>Delete</button>
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <button onClick={() => onEditRecipe(r)} style={styles.editBtn}>Edit</button>
+              <button onClick={() => remove(r.id, 'recipes')} style={styles.del}>Delete</button>
+            </div>
           </div>
         )) : <p style={styles.emptyText}>No recipes shared yet.</p>}
 

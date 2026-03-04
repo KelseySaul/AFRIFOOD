@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-export default function ShareRecipe({ user, onClose }) {
+export default function ShareRecipe({ user, onClose, initialRecipe }) {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [recipe, setRecipe] = useState({ 
-    title: "", 
-    short_description: "", 
-    ingredients: "", 
-    steps: "", 
-    category_id: "", 
+  const [recipe, setRecipe] = useState(initialRecipe ? {
+    ...initialRecipe,
+    ingredients: Array.isArray(initialRecipe.ingredients) ? initialRecipe.ingredients.join('\n') : (initialRecipe.ingredients || ""),
+    steps: Array.isArray(initialRecipe.steps) ? initialRecipe.steps.join('\n') : (initialRecipe.steps || "")
+  } : {
+    title: "",
+    short_description: "",
+    ingredients: "",
+    steps: "",
+    category_id: "",
     location: "",
-    cooking_time: "", 
-    difficulty: "Easy" 
+    cooking_time: "",
+    difficulty: "Easy"
   });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -24,45 +28,64 @@ export default function ShareRecipe({ user, onClose }) {
 
   const handlePublish = async () => {
     // Validation: Ensure all critical fields are filled
-    if (!recipe.title || !recipe.short_description || !file || !recipe.cooking_time) {
-      return alert("Photo, Title, Description, and Cooking Time are required.");
+    const isEditing = !!recipe.id;
+    if (!recipe.title || !recipe.short_description || (!isEditing && !file) || !recipe.cooking_time) {
+      return alert(isEditing ? "Title, Description, and Cooking Time are required." : "Photo, Title, Description, and Cooking Time are required.");
     }
-    
+
     setLoading(true);
 
     try {
-      // 1. Upload Image to Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const path = `recipe-photos/${fileName}`;
+      let publicImageUrl = recipe.image_url;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(path, file);
+      // 1. Upload Image to Storage (only if new file selected)
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+        const path = `recipe-photos/${fileName}`;
 
-      if (uploadError) throw uploadError;
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(path, file);
 
-      // 2. Get Public URL (Corrected to camelCase)
-      const { data: urlData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(path);
+        if (uploadError) throw uploadError;
 
-      const publicImageUrl = urlData.publicUrl;
+        // 2. Get Public URL
+        const { data: urlData } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(path);
 
-      // 3. Insert Recipe into Database
-      const { error } = await supabase.from("recipes").insert([{
-        ...recipe,
+        publicImageUrl = urlData.publicUrl;
+      }
+
+      // 3. Prepare Recipe Data
+      const recipeData = {
+        title: recipe.title,
+        short_description: recipe.short_description,
         cooking_time: parseInt(recipe.cooking_time) || 0,
         ingredients: recipe.ingredients.split('\n').filter(i => i.trim() !== ""),
         steps: recipe.steps.split('\n').filter(s => s.trim() !== ""),
+        category_id: recipe.category_id,
+        location: recipe.location,
+        difficulty: recipe.difficulty,
         image_url: publicImageUrl,
         user_id: user.id,
         status: 'approved'
-      }]);
+      };
 
-      if (error) throw error;
+      // 4. Update or Insert into Database
+      let dbError;
+      if (isEditing) {
+        const { error } = await supabase.from("recipes").update(recipeData).eq('id', recipe.id);
+        dbError = error;
+      } else {
+        const { error } = await supabase.from("recipes").insert([recipeData]);
+        dbError = error;
+      }
 
-      alert("Heritage Published! ✨");
+      if (dbError) throw dbError;
+
+      alert(isEditing ? "Heritage Updated! ✨" : "Heritage Published! ✨");
       onClose();
       window.location.reload(); // Refresh to show new recipe in feed
     } catch (err) {
@@ -77,37 +100,39 @@ export default function ShareRecipe({ user, onClose }) {
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <button onClick={onClose} style={styles.closeBtn}>✕</button>
-        <h2 style={{fontFamily: 'Playfair Display', color: '#1A120B', marginBottom: '25px'}}>Share Heritage Recipe</h2>
-        
+        <h2 style={{ fontFamily: 'Playfair Display', color: '#1A120B', marginBottom: '25px' }}>
+          {recipe.id ? 'Edit Heritage Recipe' : 'Share Heritage Recipe'}
+        </h2>
+
         {/* Image Upload Dropzone */}
-        <div 
-          style={{...styles.dropzone, backgroundImage: preview ? `url(${preview})` : 'none'}} 
+        <div
+          style={{ ...styles.dropzone, backgroundImage: preview ? `url(${preview})` : (recipe.image_url ? `url(${recipe.image_url})` : 'none') }}
           onClick={() => document.getElementById('r-img').click()}
         >
-          {!preview && <div style={{textAlign: 'center', color: '#888'}}>+ Upload Meal Photo</div>}
-          <input id="r-img" type="file" hidden accept="image/*" onChange={e => { 
+          {(!preview && !recipe.image_url) && <div style={{ textAlign: 'center', color: '#888' }}>+ Upload Meal Photo</div>}
+          <input id="r-img" type="file" hidden accept="image/*" onChange={e => {
             const selectedFile = e.target.files[0];
             if (selectedFile) {
-              setFile(selectedFile); 
-              setPreview(URL.createObjectURL(selectedFile)); 
+              setFile(selectedFile);
+              setPreview(URL.createObjectURL(selectedFile));
             }
           }} />
         </div>
 
         <div style={styles.inputGroup}>
           <label style={styles.label}>RECIPE TITLE</label>
-          <input style={styles.input} placeholder="e.g. Egusi Soup" value={recipe.title} onChange={e => setRecipe({...recipe, title: e.target.value})} />
+          <input style={styles.input} placeholder="e.g. Egusi Soup" value={recipe.title} onChange={e => setRecipe({ ...recipe, title: e.target.value })} />
         </div>
 
         {/* Short Description */}
         <div style={styles.inputGroup}>
           <label style={styles.label}>SHORT DESCRIPTION (For the feed card)</label>
-          <input 
-            style={styles.input} 
-            placeholder="A brief catchy sentence about this dish..." 
+          <input
+            style={styles.input}
+            placeholder="A brief catchy sentence about this dish..."
             maxLength={120}
-            value={recipe.short_description} 
-            onChange={e => setRecipe({...recipe, short_description: e.target.value})} 
+            value={recipe.short_description}
+            onChange={e => setRecipe({ ...recipe, short_description: e.target.value })}
           />
         </div>
 
@@ -115,11 +140,11 @@ export default function ShareRecipe({ user, onClose }) {
         <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
           <div style={{ flex: 1 }}>
             <label style={styles.label}>TIME (MINS)</label>
-            <input type="number" style={styles.input} placeholder="45" value={recipe.cooking_time} onChange={e => setRecipe({...recipe, cooking_time: e.target.value})} />
+            <input type="number" style={styles.input} placeholder="45" value={recipe.cooking_time} onChange={e => setRecipe({ ...recipe, cooking_time: e.target.value })} />
           </div>
           <div style={{ flex: 1 }}>
             <label style={styles.label}>DIFFICULTY</label>
-            <select style={styles.input} value={recipe.difficulty} onChange={e => setRecipe({...recipe, difficulty: e.target.value})}>
+            <select style={styles.input} value={recipe.difficulty} onChange={e => setRecipe({ ...recipe, difficulty: e.target.value })}>
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
               <option value="Hard">Hard</option>
@@ -129,24 +154,24 @@ export default function ShareRecipe({ user, onClose }) {
 
         <div style={styles.inputGroup}>
           <label style={styles.label}>HERITAGE REGION</label>
-          <select style={styles.input} value={recipe.category_id} onChange={e => setRecipe({...recipe, category_id: e.target.value})}>
-             <option value="">Select Region</option>
-             {categories.map(c => <option key={c.id} value={c.id}>{c.region} — {c.name}</option>)}
+          <select style={styles.input} value={recipe.category_id} onChange={e => setRecipe({ ...recipe, category_id: e.target.value })}>
+            <option value="">Select Region</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.region} — {c.name}</option>)}
           </select>
         </div>
 
         <div style={styles.inputGroup}>
           <label style={styles.label}>INGREDIENTS (One per line)</label>
-          <textarea style={styles.textarea} placeholder="3 cups of rice..." value={recipe.ingredients} onChange={e => setRecipe({...recipe, ingredients: e.target.value})} />
+          <textarea style={styles.textarea} placeholder="3 cups of rice..." value={recipe.ingredients} onChange={e => setRecipe({ ...recipe, ingredients: e.target.value })} />
         </div>
 
         <div style={styles.inputGroup}>
           <label style={styles.label}>PROCEDURE (One per line)</label>
-          <textarea style={styles.textarea} placeholder="Wash the rice..." value={recipe.steps} onChange={e => setRecipe({...recipe, steps: e.target.value})} />
+          <textarea style={styles.textarea} placeholder="Wash the rice..." value={recipe.steps} onChange={e => setRecipe({ ...recipe, steps: e.target.value })} />
         </div>
-        
+
         <button style={styles.btn} onClick={handlePublish} disabled={loading}>
-          {loading ? "Stirring and seasoning..." : "Publish Heritage"}
+          {loading ? "Stirring and seasoning..." : (recipe.id ? "Update Heritage" : "Publish Heritage")}
         </button>
       </div>
     </div>

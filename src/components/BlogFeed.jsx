@@ -9,32 +9,32 @@ function BlogModal({ blog, onClose }) {
     <div style={modalStyles.overlay} onClick={onClose}>
       <div style={modalStyles.content} onClick={(e) => e.stopPropagation()}>
         <button style={modalStyles.closeBtn} onClick={onClose}>✕</button>
-        
+
         <div style={modalStyles.heroContainer}>
-            <img 
-                src={blog.image_url} 
-                style={modalStyles.heroImg} 
-                alt={blog.title}
-            />
-            <div style={modalStyles.heroOverlay}>
-                <h2 style={modalStyles.modalTitle}>{blog.title}</h2>
-            </div>
+          <img
+            src={blog.image_url}
+            style={modalStyles.heroImg}
+            alt={blog.title}
+          />
+          <div style={modalStyles.heroOverlay}>
+            <h2 style={modalStyles.modalTitle}>{blog.title}</h2>
+          </div>
         </div>
 
         <div style={modalStyles.body}>
           <div style={modalStyles.meta}>
             <div style={styles.authorGroup}>
-              <img 
-                src={blog.profiles?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${blog.profiles?.display_name}`} 
-                style={styles.authorAvatar} 
+              <img
+                src={blog.profiles?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${blog.profiles?.display_name}`}
+                style={styles.authorAvatar}
                 alt="Author"
               />
               <div>
                 <div style={styles.authorName}>{blog.profiles?.display_name}</div>
                 <div style={styles.dateRow}>
-                   <span>{new Date(blog.created_at).toLocaleDateString()}</span>
-                   <span style={styles.dot}>•</span>
-                   <span>{calculateReadTime(blog.content)} min read</span>
+                  <span>{new Date(blog.created_at).toLocaleDateString()}</span>
+                  <span style={styles.dot}>•</span>
+                  <span>{calculateReadTime(blog.content)} min read</span>
                 </div>
               </div>
             </div>
@@ -45,7 +45,7 @@ function BlogModal({ blog, onClose }) {
               <p key={i} style={modalStyles.paragraph}>{para}</p>
             ))}
           </div>
-          
+
           <button style={modalStyles.footerBtn} onClick={onClose}>Done Reading</button>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function BlogFeed({ searchQuery }) {
     setLoading(false);
   }
 
-  const filteredBlogs = blogs.filter(blog => 
+  const filteredBlogs = blogs.filter(blog =>
     blog.title.toLowerCase().includes((searchQuery || "").toLowerCase())
   );
 
@@ -128,12 +128,12 @@ export default function BlogFeed({ searchQuery }) {
             <h2 style={{ fontFamily: 'Playfair Display', fontSize: '1.6rem', color: '#1A120B', margin: 0 }}>Featured</h2>
             <div style={styles.trendBadge}>STORIES</div>
           </div>
-          
+
           <div className="stories-scroll">
             {trendingBlogs.map(blog => (
-              <div 
-                key={`trend-${blog.id}`} 
-                className="story-card" 
+              <div
+                key={`trend-${blog.id}`}
+                className="story-card"
                 onClick={() => setSelectedBlog(blog)}
               >
                 <img src={blog.image_url} style={styles.trendingImg} alt={blog.title} />
@@ -152,15 +152,15 @@ export default function BlogFeed({ searchQuery }) {
         {filteredBlogs.map((blog) => (
           <div key={`grid-${blog.id}`} className="recipe-card" style={styles.card} onClick={() => setSelectedBlog(blog)}>
             <div style={{ position: 'relative' }}>
-               <img src={blog.image_url} style={styles.gridImg} alt={blog.title} />
-               <div style={styles.gridTimeTag}>{calculateReadTime(blog.content)} min read</div>
+              <img src={blog.image_url} style={styles.gridImg} alt={blog.title} />
+              <div style={styles.gridTimeTag}>{calculateReadTime(blog.content)} min read</div>
             </div>
             <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
               <div style={styles.cardHeader}>
                 <div style={styles.authorGroup}>
-                  <img 
-                    src={blog.profiles?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${blog.profiles?.display_name}`} 
-                    style={styles.authorAvatarSmall} 
+                  <img
+                    src={blog.profiles?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${blog.profiles?.display_name}`}
+                    style={styles.authorAvatarSmall}
                     alt="Author"
                   />
                   <span style={styles.authorNameSmall}>{blog.profiles?.display_name}</span>
@@ -180,9 +180,9 @@ export default function BlogFeed({ searchQuery }) {
       </div>
 
       {selectedBlog && (
-        <BlogModal 
-          blog={selectedBlog} 
-          onClose={() => setSelectedBlog(null)} 
+        <BlogModal
+          blog={selectedBlog}
+          onClose={() => setSelectedBlog(null)}
         />
       )}
     </div>
@@ -210,12 +210,12 @@ const styles = {
   trendingOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: '15px', background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: '70%' },
   readTimeFloater: { position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '0.55rem', border: '1px solid rgba(255,255,255,0.3)' },
   reelTitle: { margin: '4px 0', fontSize: '0.9rem', fontFamily: 'Playfair Display', lineHeight: '1.2', fontWeight: '600' },
-  
+
   card: { height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer', borderRadius: '24px', overflow: 'hidden', background: '#fff', border: '1px solid #f0f0f0' },
   gridImg: { width: '100%', height: '220px', objectFit: 'cover' },
   gridTimeTag: { position: 'absolute', top: '12px', right: '12px', background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '4px 8px', borderRadius: '6px', fontSize: '0.6rem', backdropFilter: 'blur(4px)' },
   gridTitle: { margin: '0 0 10px 0', fontSize: '1.3rem', fontFamily: 'Playfair Display', color: '#1A120B' },
-  
+
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' },
   authorGroup: { display: 'flex', alignItems: 'center', gap: '8px' },
   authorAvatar: { width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' },
@@ -225,7 +225,7 @@ const styles = {
   dateRow: { fontSize: '0.75rem', color: '#888', display: 'flex', gap: '5px' },
   dateTag: { fontSize: '0.7rem', color: '#999' },
   dot: { color: '#E2725B' },
-  
+
   authorTag: { fontSize: '0.55rem', fontWeight: '900', letterSpacing: '1px', opacity: 0.8 },
   excerpt: { fontSize: '0.9rem', color: '#666', lineHeight: '1.5', marginBottom: '15px' },
   detailBtn: { background: '#FDFCFB', color: '#5C4033', border: '1px solid #F0EBE3', padding: '10px 20px', borderRadius: '12px', cursor: 'pointer', width: '100%', fontWeight: 'bold' }

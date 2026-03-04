@@ -1,55 +1,93 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600&display=swap');
 
 :root {
-  --primary: #5C4033;
+  --primary: #4A3228;
+  /* Deep Ebony */
   --accent: #E2725B;
-  --bg: #FDFCF8;
-  --glass: rgba(255, 255, 255, 0.8);
+  /* Terracotta */
+  --accent-secondary: #D97706;
+  /* Burnt Ochre */
+  --bg: #FAF9F6;
+  /* Warm Bone / Kaolin */
+  --glass: rgba(255, 255, 255, 0.7);
+  --pattern-color: rgba(74, 50, 40, 0.03);
+  /* Very subtle primary for pattern */
 }
 
 body {
   background-color: var(--bg);
+  /* Organic grain texture */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--primary);
   margin: 0;
+  min-height: 100vh;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-family: 'Playfair Display', serif;
+  letter-spacing: -0.5px;
 }
 
-/* Hero Section - Tighter Padding */
+/* Hero Section - Heritage Vibe */
 .hero-section {
-  padding: 60px 20px;
+  padding: 100px 20px;
   text-align: center;
-  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-              url('https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=1500&q=80');
+  background: linear-gradient(rgba(74, 50, 40, 0.7), rgba(74, 50, 40, 0.5)),
+    url('/src/assets/hero-pattern.png');
   background-size: cover;
   background-position: center;
-  color: white;
-  border-radius: 0 0 30px 30px;
-  margin-bottom: 20px;
+  background-attachment: fixed;
+  /* Parallax effect */
+  color: #FAF6F2;
+  border-radius: 0 0 40px 40px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(74, 50, 40, 0.15);
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(90deg,
+      var(--accent),
+      var(--accent) 40px,
+      var(--accent-secondary) 40px,
+      var(--accent-secondary) 80px,
+      var(--primary) 80px,
+      var(--primary) 120px);
+  opacity: 0.8;
 }
 
 /* Pinterest-style Tighter Grid */
 .recipe-grid {
   display: grid;
   /* Reduced min-width from 320px to 260px for more columns */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-  gap: 20px; /* Tighter gap */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  /* Tighter gap */
   padding: 20px;
-  max-width: 1400px; /* Wider container for more items */
+  max-width: 1400px;
+  /* Wider container for more items */
   margin: 0 auto;
 }
 
 /* Pinterest-style Card */
 .recipe-card {
   background: white;
-  border-radius: 20px; /* Slightly tighter corners */
+  border-radius: 20px;
+  /* Slightly tighter corners */
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(92, 64, 51, 0.05); /* Softer shadow for a cleaner look */
+  box-shadow: 0 4px 15px rgba(92, 64, 51, 0.05);
+  /* Softer shadow for a cleaner look */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(0,0,0,0.02);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
 }
@@ -62,20 +100,22 @@ h1, h2 {
 /* Image - Let the image be the hero */
 .recipe-card img {
   width: 100%;
-  height: 200px; /* Uniform height for clean rows */
+  height: 200px;
+  /* Uniform height for clean rows */
   object-fit: cover;
   display: block;
 }
 
 /* Tighter content area */
 .recipe-card-content {
-  padding: 16px; 
+  padding: 16px;
   flex-grow: 1;
 }
 
 .recipe-card h3 {
   margin: 8px 0;
-  font-size: 1.1rem; /* Slightly smaller for density */
+  font-size: 1.1rem;
+  /* Slightly smaller for density */
   line-height: 1.3;
 }
 
@@ -92,8 +132,15 @@ h1, h2 {
 
 /* Animation for loading items */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .recipe-card {

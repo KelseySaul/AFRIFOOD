@@ -13,22 +13,22 @@ import MyLibrary from './components/MyLibrary';
 // --- MINIMALIST ICON SET ---
 const Icons = {
   Profile: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
   ),
   Recipe: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6.5 4 4 0 0 1 16 8V5a2 2 0 0 1 2-2"/><path d="M2 21h20"/><path d="M7 21v-4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"/><path d="M21 12.12A4 4 0 0 0 16 8"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6.5 4 4 0 0 1 16 8V5a2 2 0 0 1 2-2" /><path d="M2 21h20" /><path d="M7 21v-4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4" /><path d="M21 12.12A4 4 0 0 0 16 8" /></svg>
   ),
   Story: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
   ),
   Library: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
   ),
   Home: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
   ),
   SignOut: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
   )
 };
 
@@ -36,11 +36,12 @@ function App() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
-  const [activeModal, setActiveModal] = useState(null); 
+  const [activeModal, setActiveModal] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('recipes'); 
+  const [viewMode, setViewMode] = useState('recipes');
+  const [editingRecipe, setEditingRecipe] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -50,7 +51,7 @@ function App() {
       .select('display_name, avatar_url')
       .eq('id', userId)
       .single();
-    
+
     if (!error && data) {
       setProfile(data);
     }
@@ -91,9 +92,16 @@ function App() {
     setShowDropdown(false);
   };
 
+  const openEditRecipe = (recipe) => {
+    setEditingRecipe(recipe);
+    setActiveModal('recipe');
+    setShowDropdown(false);
+  };
+
   const closeModals = () => {
     setActiveModal(null);
-    if (session) fetchUserProfile(session.user.id); 
+    setEditingRecipe(null);
+    if (session) fetchUserProfile(session.user.id);
   };
 
   return (
@@ -103,10 +111,10 @@ function App() {
         html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; position: relative; }
         
         .hero-section {
-          padding: 80px 20px;
+          padding: 100px 20px;
           text-align: center;
-          background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2000');
-          background-size: cover; background-position: center; color: white; width: 100%; box-sizing: border-box;
+          /* Style is mostly in index.css now, but keeping layout properties */
+          width: 100%; box-sizing: border-box;
         }
 
         .dropdown-item {
@@ -120,7 +128,7 @@ function App() {
           padding: 10px 12px;
           border-radius: 12px;
           cursor: pointer;
-          color: #1A120B;
+          color: var(--primary);
           font-weight: 500;
           font-size: 0.9rem;
         }
@@ -131,14 +139,14 @@ function App() {
         }
 
         .dropdown-item:hover {
-          background-color: #FDFCFB;
-          color: #E2725B !important;
+          background-color: var(--bg);
+          color: var(--accent) !important;
           transform: translateX(5px);
         }
 
         .dropdown-item:hover svg {
           opacity: 1;
-          stroke: #E2725B;
+          stroke: var(--accent);
         }
 
         @media (max-width: 768px) {
@@ -156,8 +164,8 @@ function App() {
 
       {/* --- NAVIGATION BAR --- */}
       <nav className="nav-container" style={styles.nav}>
-        <h2 
-          style={styles.logo} 
+        <h2
+          style={styles.logo}
           onClick={() => {
             setActiveFilter('All'); setShowAuth(false); setActiveModal(null); setViewMode('recipes');
           }}
@@ -168,7 +176,7 @@ function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           {session ? (
             <div style={{ position: 'relative' }} ref={dropdownRef}>
-              <div 
+              <div
                 onClick={() => setShowDropdown(!showDropdown)}
                 style={styles.profileAvatar}
               >
@@ -184,7 +192,7 @@ function App() {
                   <div style={styles.dropdownHeader}>
                     {profile?.display_name || session.user.email}
                   </div>
-                  
+
                   <button className="dropdown-item" onClick={() => openModal('profile')}>
                     <Icons.Profile /> Edit Identity
                   </button>
@@ -197,15 +205,15 @@ function App() {
                   <button className="dropdown-item" onClick={() => openModal('library')}>
                     <Icons.Library /> My Library
                   </button>
-                  
+
                   <hr style={styles.divider} />
-                  
+
                   <button className="dropdown-item" onClick={() => setShowDropdown(false)}>
                     <Icons.Home /> Return to Feed
                   </button>
-                  <button 
-                    className="dropdown-item" 
-                    style={{ color: '#d9534f' }} 
+                  <button
+                    className="dropdown-item"
+                    style={{ color: '#d9534f' }}
                     onClick={() => supabase.auth.signOut()}
                   >
                     <Icons.SignOut /> Sign Out
@@ -223,9 +231,9 @@ function App() {
 
       {/* --- COMPONENT MODALS --- */}
       {activeModal === 'profile' && <Identity user={session.user} onClose={closeModals} />}
-      {activeModal === 'recipe' && <ShareRecipe user={session.user} onClose={closeModals} />}
+      {activeModal === 'recipe' && <ShareRecipe user={session.user} onClose={closeModals} initialRecipe={editingRecipe} />}
       {activeModal === 'blog' && <PostBlog user={session.user} onClose={closeModals} />}
-      {activeModal === 'library' && <MyLibrary user={session.user} onClose={closeModals} />}
+      {activeModal === 'library' && <MyLibrary user={session.user} onClose={closeModals} onEditRecipe={openEditRecipe} />}
 
       {/* --- MAIN FEED VIEWS --- */}
       {showAuth ? (
@@ -239,13 +247,13 @@ function App() {
 
           <div className="toggle-container" style={styles.toggleContainer}>
             <div style={styles.togglePill}>
-              <button 
+              <button
                 onClick={() => setViewMode('recipes')}
                 style={viewMode === 'recipes' ? styles.activeToggle : styles.inactiveToggle}
               >
                 Recipes
               </button>
-              <button 
+              <button
                 onClick={() => setViewMode('blogs')}
                 style={viewMode === 'blogs' ? styles.activeToggle : styles.inactiveToggle}
               >
@@ -253,16 +261,16 @@ function App() {
               </button>
             </div>
           </div>
-          
+
           <div style={styles.mainContent}>
             {viewMode === 'recipes' ? (
               <>
-                <FilterBar 
-                  activeFilter={activeFilter} 
-                  setActiveFilter={setActiveFilter} 
-                  setSearchQuery={setSearchQuery} 
+                <FilterBar
+                  activeFilter={activeFilter}
+                  setActiveFilter={setActiveFilter}
+                  setSearchQuery={setSearchQuery}
                 />
-                
+
                 <div style={{ textAlign: 'center', margin: '30px 0' }}>
                   <h2 style={styles.viewTitle}>
                     {activeFilter === 'All' ? 'Latest Discoveries' : `${activeFilter} Specialties`}
@@ -270,9 +278,9 @@ function App() {
                   <div style={styles.accentLine}></div>
                 </div>
 
-                <RecipeFeed 
-                  activeFilter={activeFilter} 
-                  searchQuery={searchQuery} 
+                <RecipeFeed
+                  activeFilter={activeFilter}
+                  searchQuery={searchQuery}
                   userId={session?.user?.id}
                 />
               </>
@@ -288,54 +296,54 @@ function App() {
 
 const styles = {
   nav: {
-    padding: '0 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-    background: 'rgba(255, 255, 255, 0.9)', position: 'sticky', top: 0, zIndex: 1000, 
-    backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(0,0,0,0.05)', 
+    padding: '0 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    background: 'rgba(250, 249, 246, 0.9)', position: 'sticky', top: 0, zIndex: 1000,
+    backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(74, 50, 40, 0.08)',
     height: '70px', width: '100%', boxSizing: 'border-box'
   },
-  logo: { 
-    margin: 0, color: '#1A120B', letterSpacing: '-1.5px', cursor: 'pointer',
+  logo: {
+    margin: 0, color: 'var(--primary)', letterSpacing: '-1.5px', cursor: 'pointer',
     fontFamily: 'Playfair Display, serif', fontSize: '1.6rem'
   },
   authBtn: {
-    background: '#1A120B', color: 'white', border: 'none', padding: '10px 24px', 
+    background: 'var(--primary)', color: 'white', border: 'none', padding: '10px 24px',
     borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem'
   },
   profileAvatar: {
-    width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#E2725B', 
-    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+    width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'var(--accent)',
+    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px rgba(226, 114, 91, 0.3)',
     overflow: 'hidden'
   },
   dropdownMenu: {
     position: 'absolute', top: '55px', right: 0, width: '230px', backgroundColor: 'white',
-    borderRadius: '20px', boxShadow: '0 15px 40px rgba(0,0,0,0.12)', padding: '12px',
-    display: 'flex', flexDirection: 'column', zIndex: 1001, border: '1px solid #F0EBE3'
+    borderRadius: '20px', boxShadow: '0 15px 40px rgba(74, 50, 40, 0.12)', padding: '12px',
+    display: 'flex', flexDirection: 'column', zIndex: 1001, border: '1px solid #EBE5DF'
   },
   dropdownHeader: {
     padding: '8px 12px', fontSize: '0.75rem', color: '#AAA', textTransform: 'uppercase',
     letterSpacing: '1.2px', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis'
   },
-  divider: { border: 'none', borderTop: '1px solid #F0EBE3', margin: '8px 0' },
+  divider: { border: 'none', borderTop: '1px solid #EBE5DF', margin: '8px 0' },
   toggleContainer: {
     width: '100%', display: 'flex', justifyContent: 'center', margin: '20px 0'
   },
   togglePill: {
-    display: 'flex', background: '#f0ede9', padding: '6px', borderRadius: '50px', gap: '5px'
+    display: 'flex', background: '#EBE5DF', padding: '6px', borderRadius: '50px', gap: '5px'
   },
   activeToggle: {
-    background: '#1A120B', color: 'white', border: 'none', padding: '12px 28px', 
+    background: 'var(--primary)', color: 'white', border: 'none', padding: '12px 28px',
     borderRadius: '40px', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer'
   },
   inactiveToggle: {
-    background: 'transparent', color: '#1A120B', border: 'none', padding: '12px 28px', 
+    background: 'transparent', color: 'var(--primary)', border: 'none', padding: '12px 28px',
     borderRadius: '40px', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer', opacity: 0.5
   },
   mainContent: {
     width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box'
   },
-  viewTitle: { fontSize: 'clamp(1.6rem, 6vw, 2.2rem)', fontFamily: 'Playfair Display', margin: 0 },
-  accentLine: { width: '50px', height: '4px', background: '#E2725B', margin: '15px auto', borderRadius: '10px' }
+  viewTitle: { fontSize: 'clamp(1.6rem, 6vw, 2.2rem)', fontFamily: 'Playfair Display', margin: 0, color: 'var(--primary)' },
+  accentLine: { width: '50px', height: '4px', background: 'var(--accent)', margin: '15px auto', borderRadius: '10px' }
 };
 
 export default App;
