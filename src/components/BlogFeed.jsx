@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import CommentSection from './CommentSection';
 
 // --- SUB-COMPONENT: BLOG MODAL (THE READER) ---
 function BlogModal({ blog, onClose }) {
@@ -45,6 +46,8 @@ function BlogModal({ blog, onClose }) {
               <p key={i} style={modalStyles.paragraph}>{para}</p>
             ))}
           </div>
+
+          <CommentSection targetId={blog.id} type="blog" />
 
           <button style={modalStyles.footerBtn} onClick={onClose}>Done Reading</button>
         </div>

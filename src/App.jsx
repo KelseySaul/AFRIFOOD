@@ -59,7 +59,13 @@ function App() {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Supabase Session Error:", error.message);
+        if (error.message.includes("Refresh Token")) {
+          supabase.auth.signOut();
+        }
+      }
       setSession(session);
       if (session) fetchUserProfile(session.user.id);
     });

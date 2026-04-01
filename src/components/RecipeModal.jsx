@@ -1,4 +1,5 @@
 import React from 'react';
+import CommentSection from './CommentSection';
 
 export default function RecipeModal({ recipe, onClose }) {
   if (!recipe) return null;
@@ -88,6 +89,8 @@ export default function RecipeModal({ recipe, onClose }) {
               </div>
             </div>
           </div>
+
+          <CommentSection targetId={recipe.id} type="recipe" />
 
           {/* Bottom Action Area */}
           <div style={styles.footerActions}>
