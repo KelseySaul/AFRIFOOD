@@ -9,6 +9,7 @@ import Identity from './components/Identity';
 import ShareRecipe from './components/ShareRecipe';
 import PostBlog from './components/PostBlog';
 import MyLibrary from './components/MyLibrary';
+import Chatbot from './components/Chatbot';
 
 // --- MINIMALIST ICON SET ---
 const Icons = {
@@ -290,6 +291,7 @@ function App() {
           </div>
         </div>
       )}
+      <Chatbot />
     </div>
   );
 }
