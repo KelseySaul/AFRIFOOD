@@ -1,15 +1,59 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import CommentSection from './CommentSection';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default function RecipeModal({ recipe, onClose }) {
+  const contentRef = useRef(null);
   if (!recipe) return null;
+
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current) return;
+    
+    // Temporarily hide elements we don't want in the PDF
+    const closeBtn = contentRef.current.querySelector('button');
+    const footer = contentRef.current.querySelector('div[style*="footerActions"]');
+    const comments = contentRef.current.querySelector('div[id*="comment-section"]');
+    
+    if (closeBtn) closeBtn.style.visibility = 'hidden';
+    if (footer) footer.style.visibility = 'hidden';
+    if (comments) comments.style.display = 'none';
+
+    try {
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${recipe.title.replace(/\s+/g, '_')}_Recipe.pdf`);
+    } catch (err) {
+      console.error("PDF Export Error:", err);
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      if (closeBtn) closeBtn.style.visibility = 'visible';
+      if (footer) footer.style.visibility = 'visible';
+      if (comments) comments.style.display = 'block';
+    }
+  };
 
   const ingredientsList = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
   const stepsList = Array.isArray(recipe.steps) ? recipe.steps : [];
 
   return (
     <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
+      <div 
+        ref={contentRef}
+        style={styles.modalContent} 
+        onClick={e => e.stopPropagation()}
+      >
 
         {/* Top Floating Close Button */}
         <button onClick={onClose} style={styles.closeBtn}>✕</button>
@@ -19,6 +63,9 @@ export default function RecipeModal({ recipe, onClose }) {
           <img src={recipe.image_url} alt={recipe.title} style={styles.heroImage} />
           <div style={styles.imageOverlay}>
             <span style={styles.regionBadge}>{recipe.categories?.region || 'Heritage'}</span>
+            <button onClick={handleDownloadPDF} style={styles.headerDownloadBtn}>
+              📥 Download PDF
+            </button>
           </div>
         </div>
 
@@ -181,5 +228,18 @@ const styles = {
     fontSize: '1rem',
     width: '100%',
     maxWidth: '300px'
+  },
+  headerDownloadBtn: {
+    background: 'rgba(255,255,255,0.9)',
+    color: '#5C4033',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    fontSize: '0.8rem',
+    marginLeft: '10px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    backdropFilter: 'blur(5px)'
   }
 };

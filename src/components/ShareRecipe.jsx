@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 
 export default function ShareRecipe({ user, onClose, initialRecipe }) {
   const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [categories, setCategories] = useState([]);
   const [recipe, setRecipe] = useState(initialRecipe ? {
     ...initialRecipe,
@@ -26,6 +27,13 @@ export default function ShareRecipe({ user, onClose, initialRecipe }) {
     supabase.from("categories").select("*").then(({ data }) => setCategories(data || []));
   }, []);
 
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
   const handlePublish = async () => {
     // Validation: Ensure all critical fields are filled
     const isEditing = !!recipe.id;
@@ -36,6 +44,40 @@ export default function ShareRecipe({ user, onClose, initialRecipe }) {
     setLoading(true);
 
     try {
+      // --- AI CONTENT VALIDATION ---
+      setVerifying(true);
+      let base64Image = null;
+      if (file) {
+        base64Image = await toBase64(file);
+      } else if (recipe.image_url) {
+        // For editing, we might not have the file object, but we have the URL.
+        // Usually, validation is most critical on new uploads.
+      }
+
+      const valResponse = await fetch('/api/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'recipe',
+          data: { 
+            title: recipe.title, 
+            short_description: recipe.short_description,
+            ingredients: recipe.ingredients.split('\n').filter(i => i.trim() !== ""),
+            steps: recipe.steps.split('\n').filter(s => s.trim() !== ""),
+            image: base64Image 
+          }
+        })
+      });
+
+      const validation = await valResponse.json();
+      setVerifying(false);
+
+      if (!validation.valid) {
+        alert("🚨 Heritage Validation Failed: " + validation.reason);
+        setLoading(false);
+        return;
+      }
+
       let publicImageUrl = recipe.image_url;
 
       // 1. Upload Image to Storage (only if new file selected)
@@ -93,6 +135,7 @@ export default function ShareRecipe({ user, onClose, initialRecipe }) {
       alert("Error: " + err.message);
     } finally {
       setLoading(false);
+      setVerifying(false);
     }
   };
 
@@ -170,8 +213,8 @@ export default function ShareRecipe({ user, onClose, initialRecipe }) {
           <textarea style={styles.textarea} placeholder="Wash the rice..." value={recipe.steps} onChange={e => setRecipe({ ...recipe, steps: e.target.value })} />
         </div>
 
-        <button style={styles.btn} onClick={handlePublish} disabled={loading}>
-          {loading ? "Stirring and seasoning..." : (recipe.id ? "Update Heritage" : "Publish Heritage")}
+        <button style={styles.btn} onClick={handlePublish} disabled={loading || verifying}>
+          {verifying ? "Verifying Heritage..." : (loading ? "Stirring and seasoning..." : (recipe.id ? "Update Heritage" : "Publish Heritage"))}
         </button>
       </div>
     </div>

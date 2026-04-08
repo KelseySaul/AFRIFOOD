@@ -3,9 +3,17 @@ import { supabase } from '../lib/supabaseClient';
 
 export default function PostBlog({ user, onClose }) {
   const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [blog, setBlog] = useState({ title: "", content: "" });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 
   const handlePublish = async (status = 'published') => {
     if (!blog.title) return alert("Please at least add a title for your story.");
@@ -15,6 +23,31 @@ export default function PostBlog({ user, onClose }) {
 
     setLoading(true);
     try {
+      // --- AI CONTENT VALIDATION ---
+      if (status === 'published') {
+        setVerifying(true);
+        let base64Image = null;
+        if (file) {
+          base64Image = await toBase64(file);
+        }
+
+        const valResponse = await fetch('/api/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'blog',
+            data: { title: blog.title, content: blog.content, image: base64Image }
+          })
+        });
+
+        const validation = await valResponse.json();
+        setVerifying(false);
+        if (!validation.valid) {
+          alert("🚨 Validation Error: " + validation.reason);
+          setLoading(false);
+          return;
+        }
+      }
       let imageUrl = null;
 
       if (file) {
@@ -101,8 +134,8 @@ export default function PostBlog({ user, onClose }) {
             <button style={styles.draftBtn} onClick={() => handlePublish('draft')} disabled={loading}>
                 Save as Draft
             </button>
-            <button style={styles.publishBtn} onClick={() => handlePublish('published')} disabled={loading}>
-                {loading ? "Publishing..." : "Post Story"}
+            <button style={styles.publishBtn} onClick={() => handlePublish('published')} disabled={loading || verifying}>
+                {verifying ? "Verifying Heritage..." : (loading ? "Publishing..." : "Post Story")}
             </button>
         </div>
       </div>

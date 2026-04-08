@@ -25,6 +25,9 @@ const Icons = {
   Library: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></svg>
   ),
+  Download: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+  ),
   Home: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
   ),
@@ -43,6 +46,9 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('recipes');
   const [editingRecipe, setEditingRecipe] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSGuide, setShowIOSGuide] = useState(false);
 
   const dropdownRef = useRef(null);
 
@@ -87,12 +93,49 @@ function App() {
         setShowDropdown(false);
       }
     };
+
+    // PWA Install Logic
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    // Check for iOS
+    const checkIOS = () => {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(userAgent);
+    };
+    setIsIOS(checkIOS());
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     document.addEventListener("mousedown", handleClickOutside);
+    
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleInstallApp = async () => {
+    if (isIOS) {
+      setShowIOSGuide(true);
+      setShowDropdown(false);
+      return;
+    }
+
+    if (!deferredPrompt) {
+      alert("App is already installed or your browser doesn't support installation.");
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+    setShowDropdown(false);
+  };
 
   const openModal = (modalName) => {
     setActiveModal(modalName);
@@ -213,6 +256,10 @@ function App() {
                     <Icons.Library /> My Library
                   </button>
 
+                  <button className="dropdown-item" onClick={handleInstallApp} style={{ color: 'var(--accent)' }}>
+                    <Icons.Download /> Install AfriFood App
+                  </button>
+
                   <hr style={styles.divider} />
 
                   <button className="dropdown-item" onClick={() => setShowDropdown(false)}>
@@ -298,6 +345,21 @@ function App() {
         </div>
       )}
       <Chatbot />
+
+      {/* iOS Installation Guide Overlay */}
+      {showIOSGuide && (
+        <div style={styles.guideOverlay} onClick={() => setShowIOSGuide(false)}>
+          <div style={styles.guideModal} onClick={e => e.stopPropagation()}>
+            <h2 style={{ fontFamily: 'Playfair Display' }}>Install on iPhone</h2>
+            <ol style={styles.guideList}>
+              <li>Open this site in <strong>Safari</strong>.</li>
+              <li>Tap the <strong>Share</strong> button (square with up arrow).</li>
+              <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+            </ol>
+            <button onClick={() => setShowIOSGuide(false)} style={styles.guideCloseBtn}>Got it!</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -351,7 +413,11 @@ const styles = {
     width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box'
   },
   viewTitle: { fontSize: 'clamp(1.6rem, 6vw, 2.2rem)', fontFamily: 'Playfair Display', margin: 0, color: 'var(--primary)' },
-  accentLine: { width: '50px', height: '4px', background: 'var(--accent)', margin: '15px auto', borderRadius: '10px' }
+  accentLine: { width: '50px', height: '4px', background: 'var(--accent)', margin: '15px auto', borderRadius: '10px' },
+  guideOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' },
+  guideModal: { background: 'white', padding: '30px', borderRadius: '30px', maxWidth: '400px', width: '100%', textAlign: 'center' },
+  guideList: { textAlign: 'left', margin: '20px 0', lineHeight: '1.8' },
+  guideCloseBtn: { background: 'var(--primary)', color: 'white', border: 'none', padding: '12px 30px', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }
 };
 
 export default App;

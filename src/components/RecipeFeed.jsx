@@ -2,6 +2,8 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import RecipeModal from './RecipeModal';
 import LikeButton from './LikeButton';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -72,13 +74,32 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
   }
 
   const attachLikeCounts = async (recipeList) => {
-    return await Promise.all(recipeList.map(async (recipe) => {
-      const { count } = await supabase
+    if (!recipeList.length) return recipeList;
+    const recipeIds = recipeList.map(r => r.id);
+    
+    try {
+      // BATCH FETCH: Get all likes for all retrieved recipes in ONE query
+      const { data: allLikes, error } = await supabase
         .from('likes')
-        .select('*', { count: 'exact', head: true })
-        .eq('recipe_id', recipe.id);
-      return { ...recipe, like_count: count || 0 };
-    }));
+        .select('recipe_id')
+        .in('recipe_id', recipeIds);
+
+      if (error) throw error;
+
+      // Group counts locally
+      const counts = {};
+      allLikes.forEach(like => {
+        counts[like.recipe_id] = (counts[like.recipe_id] || 0) + 1;
+      });
+
+      return recipeList.map(r => ({
+        ...r,
+        like_count: counts[r.id] || 0
+      }));
+    } catch (err) {
+      console.error("Batch likes error:", err);
+      return recipeList.map(r => ({ ...r, like_count: 0 }));
+    }
   };
 
   async function fetchTrending() {
@@ -249,7 +270,24 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
                   </p>
                   <div style={styles.cardFooter}>
                     <span style={{ fontSize: '0.9rem', color: '#888' }}>⏱️ {recipe.cooking_time} mins</span>
-                    <button onClick={() => setSelectedRecipe(recipe)} style={styles.detailBtn}>View Detail</button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Trigger standard selection so modal logic can be reused or just direct download
+                          setSelectedRecipe(recipe);
+                          setTimeout(() => {
+                            const btn = document.querySelector('button[style*="downloadBtn"]');
+                            if (btn) btn.click();
+                          }, 100);
+                        }} 
+                        style={styles.cardDownloadBtn}
+                        title="Download PDF"
+                      >
+                        📥
+                      </button>
+                      <button onClick={() => setSelectedRecipe(recipe)} style={styles.detailBtn}>View Detail</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -314,5 +352,18 @@ const styles = {
   descriptionSnippet: { fontSize: '0.88rem', color: '#666', lineHeight: '1.5', height: '3em', overflow: 'hidden' },
   cardFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '18px' },
   detailBtn: { background: '#5C4033', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '14px', cursor: 'pointer', fontWeight: 'bold' },
+  cardDownloadBtn: {
+    background: '#FDFCFB',
+    border: '1px solid #EBE5DF',
+    color: '#5C4033',
+    padding: '8px 12px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s ease'
+  },
   emptyState: { textAlign: 'center', padding: '80px 20px', background: '#FDFCFB', borderRadius: '40px', margin: '20px', border: '1px dashed #E5E5E5' }
 };
