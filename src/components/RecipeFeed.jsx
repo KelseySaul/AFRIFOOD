@@ -2,8 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import RecipeModal from './RecipeModal';
 import LikeButton from './LikeButton';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { generateRecipePDF } from '../lib/pdfGenerator';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -272,14 +271,13 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
                     <span style={{ fontSize: '0.9rem', color: '#888' }}>⏱️ {recipe.cooking_time} mins</span>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button 
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          // Trigger standard selection so modal logic can be reused or just direct download
-                          setSelectedRecipe(recipe);
-                          setTimeout(() => {
-                            const btn = document.querySelector('button[style*="downloadBtn"]');
-                            if (btn) btn.click();
-                          }, 100);
+                          try {
+                            await generateRecipePDF(recipe);
+                          } catch (err) {
+                            console.error("Card PDF Error:", err);
+                          }
                         }} 
                         style={styles.cardDownloadBtn}
                         title="Download PDF"

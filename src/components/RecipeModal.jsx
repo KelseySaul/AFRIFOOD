@@ -1,46 +1,17 @@
 import React, { useRef } from 'react';
 import CommentSection from './CommentSection';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { generateRecipePDF } from '../lib/pdfGenerator';
 
 export default function RecipeModal({ recipe, onClose }) {
   const contentRef = useRef(null);
   if (!recipe) return null;
 
   const handleDownloadPDF = async () => {
-    if (!contentRef.current) return;
-    
-    // Temporarily hide elements we don't want in the PDF
-    const closeBtn = contentRef.current.querySelector('button');
-    const footer = contentRef.current.querySelector('div[style*="footerActions"]');
-    const comments = contentRef.current.querySelector('div[id*="comment-section"]');
-    
-    if (closeBtn) closeBtn.style.visibility = 'hidden';
-    if (footer) footer.style.visibility = 'hidden';
-    if (comments) comments.style.display = 'none';
-
     try {
-      const canvas = await html2canvas(contentRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`${recipe.title.replace(/\s+/g, '_')}_Recipe.pdf`);
+      await generateRecipePDF(recipe);
     } catch (err) {
       console.error("PDF Export Error:", err);
       alert("Failed to generate PDF. Please try again.");
-    } finally {
-      if (closeBtn) closeBtn.style.visibility = 'visible';
-      if (footer) footer.style.visibility = 'visible';
-      if (comments) comments.style.display = 'block';
     }
   };
 
