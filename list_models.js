@@ -1,4 +1,4 @@
-const apiKey = "AIzaSyBxRE8mlkiLTgMtd3xlfGcLBG2agp2emx4";
+const apiKey = process.env.GEMINI_API_KEY;
 
 async function list() {
   try {
