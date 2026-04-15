@@ -4,6 +4,7 @@ import RecipeFeed from './components/RecipeFeed';
 import Auth from './components/Auth';
 import FilterBar from './components/FilterBar';
 import BlogFeed from './components/BlogFeed';
+import StoresFeed from './components/StoresFeed';
 
 import Identity from './components/Identity';
 import ShareRecipe from './components/ShareRecipe';
@@ -45,6 +46,7 @@ function App() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('recipes');
+  const [selectedRecipeForStores, setSelectedRecipeForStores] = useState(null);
   const [editingRecipe, setEditingRecipe] = useState(null);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -313,6 +315,15 @@ function App() {
               >
                 Blogs
               </button>
+              <button
+                onClick={() => {
+                  setViewMode('stores');
+                  setSelectedRecipeForStores(null);
+                }}
+                style={viewMode === 'stores' ? styles.activeToggle : styles.inactiveToggle}
+              >
+                Stores
+              </button>
             </div>
           </div>
 
@@ -336,10 +347,16 @@ function App() {
                   activeFilter={activeFilter}
                   searchQuery={searchQuery}
                   userId={session?.user?.id}
+                  onFindInStores={(recipe) => {
+                    setSelectedRecipeForStores(recipe);
+                    setViewMode('stores');
+                  }}
                 />
               </>
-            ) : (
+            ) : viewMode === 'blogs' ? (
               <BlogFeed searchQuery={searchQuery} />
+            ) : (
+              <StoresFeed recipeFilter={selectedRecipeForStores} />
             )}
           </div>
         </div>

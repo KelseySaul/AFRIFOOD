@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import CommentSection from './CommentSection';
 import { generateRecipePDF } from '../lib/pdfGenerator';
 
-export default function RecipeModal({ recipe, onClose }) {
+export default function RecipeModal({ recipe, onClose, onFindInStores }) {
   const contentRef = useRef(null);
   if (!recipe) return null;
 
@@ -12,6 +12,13 @@ export default function RecipeModal({ recipe, onClose }) {
     } catch (err) {
       console.error("PDF Export Error:", err);
       alert("Failed to generate PDF. Please try again.");
+    }
+  };
+
+  const handleFindInStores = () => {
+    if (onFindInStores) {
+      onFindInStores(recipe);
+      onClose();
     }
   };
 
@@ -64,6 +71,9 @@ export default function RecipeModal({ recipe, onClose }) {
                 <strong style={styles.infoValue}>{recipe.difficulty || 'Traditional'}</strong>
               </div>
             </div>
+            <button onClick={handleFindInStores} style={styles.shopBtn}>
+              🛒 Find Ingredients
+            </button>
           </div>
 
           <hr style={styles.divider} />
@@ -199,6 +209,21 @@ const styles = {
     fontSize: '1rem',
     width: '100%',
     maxWidth: '300px'
+  },
+  shopBtn: {
+    background: '#E2725B',
+    color: 'white',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    fontSize: '0.85rem',
+    boxShadow: '0 4px 12px rgba(226, 114, 91, 0.2)',
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
   },
   headerDownloadBtn: {
     background: 'rgba(255,255,255,0.9)',

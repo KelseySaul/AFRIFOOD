@@ -6,7 +6,7 @@ import { generateRecipePDF } from '../lib/pdfGenerator';
 
 const ITEMS_PER_PAGE = 12;
 
-export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
+export default function RecipeFeed({ activeFilter, searchQuery, userId, onFindInStores }) {
   const [recipes, setRecipes] = useState([]);
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -304,7 +304,13 @@ export default function RecipeFeed({ activeFilter, searchQuery, userId }) {
         </div>
       )}
 
-      {selectedRecipe && <RecipeModal recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />}
+      {selectedRecipe && (
+        <RecipeModal 
+          recipe={selectedRecipe} 
+          onClose={() => setSelectedRecipe(null)} 
+          onFindInStores={onFindInStores}
+        />
+      )}
     </div>
   );
 }
