@@ -1,0 +1,206 @@
+.stores-container {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.stores-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.stores-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stores-title {
+  font-size: 2rem;
+  font-family: 'Playfair Display', serif;
+  margin: 0;
+  color: #1A120B;
+}
+
+.region-highlight {
+  font-size: 0.9rem;
+  color: #E2725B;
+  font-weight: bold;
+}
+
+.stores-search-controls {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  max-width: 700px;
+  flex-wrap: wrap;
+}
+
+.stores-search-input {
+  padding: 12px 20px;
+  border-radius: 15px;
+  border: 1px solid #EBE5DF;
+  flex: 1.5;
+  min-width: 200px;
+  font-size: 0.9rem;
+}
+
+.location-search-wrapper {
+  display: flex;
+  flex: 1;
+  min-width: 180px;
+}
+
+.location-input {
+  padding: 12px 15px;
+  border-radius: 15px 0 0 15px;
+  border: 1px solid #EBE5DF;
+  border-right: none;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.location-search-button {
+  padding: 12px 15px;
+  border-radius: 0 15px 15px 0;
+  border: 1px solid #EBE5DF;
+  background: white;
+  cursor: pointer;
+}
+
+.stores-content-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 30px;
+  height: 70vh;
+  min-height: 500px;
+}
+
+.stores-list-section {
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.stores-map-section {
+  background: #FDFCFB;
+  border-radius: 20px;
+  border: 1px solid #F0EBE3;
+  overflow: hidden;
+  height: 100%;
+}
+
+.store-card {
+  display: flex;
+  gap: 15px;
+  background: white;
+  padding: 15px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  border: 1px solid #F0EBE3;
+  transition: transform 0.2s ease;
+}
+
+.store-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.store-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 15px;
+  object-fit: cover;
+}
+
+.store-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.store-name {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1A120B;
+}
+
+.store-address {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.distance-badge {
+  background: #E2725B;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  align-self: flex-start;
+  font-weight: bold;
+}
+
+.store-tags-container {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.store-tag {
+  background: #FDFCFB;
+  border: 1px solid #F0EBE3;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  color: #5C4033;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background: #FDFCFB;
+  border-radius: 20px;
+  border: 1px dashed #DDD;
+}
+
+/* RESPONSIVE STYLES */
+@media (max-width: 900px) {
+  .stores-content-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    display: flex;
+    flex-direction: column-reverse; /* Map on top for mobile often better, or list on top? Let's do map on top */
+  }
+
+  .stores-map-section {
+    height: 400px;
+    margin-bottom: 20px;
+  }
+
+  .stores-list-section {
+    height: 400px;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .stores-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stores-search-controls {
+    width: 100%;
+  }
+
+  .stores-title {
+    font-size: 1.5rem;
+  }
+}

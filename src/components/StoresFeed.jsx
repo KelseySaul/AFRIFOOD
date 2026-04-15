@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import './StoresFeed.css';
 import L from 'leaflet';
 
 // Fix for Leaflet marker icons in React
@@ -122,16 +123,22 @@ export default function StoresFeed({ recipeFilter }) {
   const fetchStores = async () => {
     setLoading(true);
     try {
+      // Attempt to fetch from Supabase
       const { data, error } = await supabase
         .from('stores')
         .select('*');
 
-      if (error || !data || data.length === 0) {
+      if (error) {
+        // If table doesn't exist (404/42P01), it will catch here
+        console.warn("Supabase stores fetch failed, using fallback mock data.");
+        setStores(MOCK_STORES);
+      } else if (!data || data.length === 0) {
         setStores(MOCK_STORES);
       } else {
         setStores(data);
       }
     } catch (err) {
+      console.error("Store fetch error:", err);
       setStores(MOCK_STORES);
     } finally {
       setLoading(false);
@@ -213,38 +220,38 @@ export default function StoresFeed({ recipeFilter }) {
   );
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <div style={styles.titleWrapper}>
-            <h2 style={styles.title}>
+    <div className="stores-container">
+      <div className="stores-header">
+        <div className="stores-title-wrapper">
+            <h2 className="stores-title">
                 {recipeFilter ? `Sourcing for ${recipeFilter.title}` : 'Ingredient Hubs'}
             </h2>
             {recipeFilter && (
-                <span style={styles.regionHighlight}>
+                <span className="region-highlight">
                     Highlighted Region: {recipeFilter.categories?.region || 'Traditional Heritage'}
                 </span>
             )}
         </div>
-        <div style={styles.searchControls}>
+        <div className="stores-search-controls">
           <input 
             type="text" 
             placeholder="Search stores or ingredients..." 
-            style={styles.searchInput}
+            className="stores-search-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <div style={styles.locationSearchWrapper}>
+          <div className="location-search-wrapper">
             <input 
               type="text" 
               placeholder="City/Country..." 
-              style={styles.locationInput}
+              className="location-input"
               value={locationQuery}
               onChange={(e) => setLocationQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleLocationSearch()}
             />
             <button 
               onClick={handleLocationSearch}
-              style={styles.searchButton}
+              className="location-search-button"
               disabled={searchingLocation}
             >
               {searchingLocation ? '...' : '🔍'}
@@ -253,8 +260,8 @@ export default function StoresFeed({ recipeFilter }) {
         </div>
       </div>
 
-      <div style={styles.contentLayout}>
-        <div style={styles.listSection}>
+      <div className="stores-content-layout">
+        <div className="stores-list-section">
           {sortedStores.length > 0 ? sortedStores.map(store => {
             const distance = userLocation 
               ? getDistance(userLocation.latitude, userLocation.longitude, store.latitude, store.longitude).toFixed(1)
@@ -263,33 +270,33 @@ export default function StoresFeed({ recipeFilter }) {
             return (
               <div 
                 key={store.id} 
-                style={styles.storeCard}
+                className="store-card"
                 onClick={() => {
                     setMapCenter([store.latitude, store.longitude]);
                     setMapZoom(15);
                 }}
               >
-                <img src={store.image_url} alt={store.name} style={styles.storeImg} />
-                <div style={styles.storeInfo}>
-                  <h3 style={styles.storeName}>{store.name}</h3>
-                  <p style={styles.storeAddress}>📍 {store.address}</p>
-                  {distance && <span style={styles.distanceBadge}>{distance} km away</span>}
-                  <div style={styles.tagsContainer}>
+                <img src={store.image_url} alt={store.name} className="store-img" />
+                <div className="store-info">
+                  <h3 className="store-name">{store.name}</h3>
+                  <p className="store-address">📍 {store.address}</p>
+                  {distance && <span className="distance-badge">{distance} km away</span>}
+                  <div className="store-tags-container">
                     {store.specialty_ingredients.slice(0, 3).map((ing, i) => (
-                      <span key={i} style={styles.tag}>{ing}</span>
+                      <span key={i} className="store-tag">{ing}</span>
                     ))}
                   </div>
                 </div>
               </div>
             );
           }) : (
-            <div style={styles.noResults}>
+            <div className="no-results">
                 No stores found matching your criteria.
             </div>
           )}
         </div>
 
-        <div style={styles.mapSection}>
+        <div className="stores-map-section">
           <MapContainer center={mapCenter} zoom={mapZoom} style={{ height: '100%', width: '100%', borderRadius: '20px' }}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -338,32 +345,3 @@ export default function StoresFeed({ recipeFilter }) {
     </div>
   );
 }
-
-const styles = {
-  container: { width: '100%', padding: '20px', boxSizing: 'border-box' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' },
-  titleWrapper: { display: 'flex', flexDirection: 'column', gap: '5px' },
-  title: { fontSize: '2rem', fontFamily: 'Playfair Display', margin: 0, color: '#1A120B' },
-  regionHighlight: { fontSize: '0.9rem', color: '#E2725B', fontWeight: 'bold' },
-  searchControls: { display: 'flex', gap: '10px', flex: '1', maxWidth: '700px', flexWrap: 'wrap' },
-  searchInput: { padding: '12px 20px', borderRadius: '15px', border: '1px solid #EBE5DF', flex: '1.5', minWidth: '200px', fontSize: '0.9rem' },
-  locationSearchWrapper: { display: 'flex', flex: '1', minWidth: '180px' },
-  locationInput: { padding: '12px 15px', borderRadius: '15px 0 0 15px', border: '1px solid #EBE5DF', borderRight: 'none', flex: '1', fontSize: '0.9rem' },
-  searchButton: { padding: '12px 15px', borderRadius: '0 15px 15px 0', border: '1px solid #EBE5DF', background: 'white', cursor: 'pointer' },
-  contentLayout: { display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '30px', height: '70vh', minHeight: '500px' },
-  listSection: { overflowY: 'auto', paddingRight: '10px' },
-  mapSection: { background: '#FDFCFB', borderRadius: '20px', border: '1px solid #F0EBE3', overflow: 'hidden' },
-  storeCard: { display: 'flex', gap: '15px', background: 'white', padding: '15px', borderRadius: '20px', marginBottom: '15px', cursor: 'pointer', border: '1px solid #F0EBE3', transition: 'transform 0.2s ease' },
-  storeImg: { width: '80px', height: '80px', borderRadius: '15px', objectFit: 'cover' },
-  storeInfo: { display: 'flex', flexDirection: 'column', gap: '5px' },
-  storeName: { margin: 0, fontSize: '1.1rem', color: '#1A120B' },
-  storeAddress: { margin: 0, fontSize: '0.85rem', color: '#666' },
-  distanceBadge: { background: '#E2725B', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '0.75rem', alignSelf: 'flex-start', fontWeight: 'bold' },
-  tagsContainer: { display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap' },
-  tag: { background: '#FDFCFB', border: '1px solid #F0EBE3', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', color: '#5C4033' },
-  noResults: { textAlign: 'center', padding: '40px', color: '#666', background: '#FDFCFB', borderRadius: '20px', border: '1px dashed #DDD' },
-  '@media (max-width: 900px)': {
-    contentLayout: { gridTemplateColumns: '1fr' },
-    mapSection: { height: '400px' }
-  }
-};
