@@ -92,6 +92,161 @@ const MOCK_STORES = [
     specialty_ingredients: ['Shito', 'Waakye Leaves', 'Plantain Flour', 'Kenkey'],
     contact_number: '+233 24 000 0000',
     image_url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80'
+  },
+  // Kenya
+  {
+    id: 'kenya-1',
+    name: 'Piquant Spices',
+    address: 'Nairobi, Kenya',
+    latitude: -1.286389,
+    longitude: 36.817223,
+    specialty_ingredients: ['Chili', 'Ginger', 'Garlic', 'Pilau Masala'],
+    contact_number: '+254 20 123456',
+    image_url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'kenya-2',
+    name: 'Nemuwa Cereal General Store',
+    address: 'Nairobi, Kenya',
+    latitude: -1.2921,
+    longitude: 36.8219,
+    specialty_ingredients: ['Maize', 'Beans', 'Lentils', 'Millet'],
+    contact_number: '+254 20 234567',
+    image_url: 'https://images.unsplash.com/photo-1506484381205-f7945653044d?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'kenya-3',
+    name: 'Moyale Spices Shop',
+    address: 'Nairobi, Kenya',
+    latitude: -1.2833,
+    longitude: 36.8167,
+    specialty_ingredients: ['Cardamom', 'Cinnamon', 'Cloves', 'Turmeric'],
+    contact_number: '+254 20 345678',
+    image_url: 'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=800&q=80'
+  },
+  // Nigeria
+  {
+    id: 'nigeria-1',
+    name: 'Spices Herbs and Nuts',
+    address: 'Lagos, Nigeria',
+    latitude: 6.465422,
+    longitude: 3.406448,
+    specialty_ingredients: ['Cashew Nuts', 'Herbal Teas', 'Local Spices'],
+    contact_number: '+234 1 1234567',
+    image_url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'nigeria-2',
+    name: 'Spice house seasoning',
+    address: 'Lagos, Nigeria',
+    latitude: 6.5244,
+    longitude: 3.3792,
+    specialty_ingredients: ['Suya Spice', 'Jollof Seasoning', 'Thyme'],
+    contact_number: '+234 1 2345678',
+    image_url: 'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'nigeria-3',
+    name: 'Kunle Spices',
+    address: 'Lagos, Nigeria',
+    latitude: 6.6018,
+    longitude: 3.3515,
+    specialty_ingredients: ['Curry', 'Nutmeg', 'Bay Leaves'],
+    contact_number: '+234 1 3456789',
+    image_url: 'https://images.unsplash.com/photo-1506484381205-f7945653044d?auto=format&fit=crop&w=800&q=80'
+  },
+  // Liberia
+  {
+    id: 'liberia-1',
+    name: 'Sangam store',
+    address: 'Monrovia, Liberia',
+    latitude: 6.3156,
+    longitude: -10.8074,
+    specialty_ingredients: ['Imported Spices', 'Rice', 'Cooking Oil'],
+    contact_number: '+231 77 123 456',
+    image_url: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'liberia-2',
+    name: 'Harbel Supermarket',
+    address: 'Harbel, Liberia',
+    latitude: 6.2753,
+    longitude: -10.3444,
+    specialty_ingredients: ['Local Produce', 'Frozen Meats', 'Spices'],
+    contact_number: '+231 77 234 567',
+    image_url: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'liberia-3',
+    name: 'Red light Market',
+    address: 'Paynesville, Liberia',
+    latitude: 6.2625,
+    longitude: -10.7092,
+    specialty_ingredients: ['Country Cloth', 'Palm Butter', 'Bitter Ball'],
+    contact_number: '+231 77 345 678',
+    image_url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80'
+  },
+  // Tanzania
+  {
+    id: 'tanzania-1',
+    name: 'Paje Spice Shop',
+    address: 'Paje, Zanzibar, Tanzania',
+    latitude: -6.2662,
+    longitude: 39.5348,
+    specialty_ingredients: ['Vanilla Beans', 'Lemongrass', 'Nutmeg'],
+    contact_number: '+255 24 123456',
+    image_url: 'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'tanzania-2',
+    name: 'Haleem Spice',
+    address: 'Zanzibar City, Tanzania',
+    latitude: -6.1659,
+    longitude: 39.2026,
+    specialty_ingredients: ['Cumin', 'Black Pepper', 'Cloves'],
+    contact_number: '+255 24 234567',
+    image_url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'tanzania-3',
+    name: 'Village green Spice farm Zanzibar',
+    address: 'Zanzibar, Tanzania',
+    latitude: -6.1000,
+    longitude: 39.2500,
+    specialty_ingredients: ['Fresh Turmeric', 'Cinnamon Bark', 'Spice Tours'],
+    contact_number: '+255 24 345678',
+    image_url: 'https://images.unsplash.com/photo-1506484381205-f7945653044d?auto=format&fit=crop&w=800&q=80'
+  },
+  // Uganda
+  {
+    id: 'uganda-1',
+    name: 'Sahara Spice hub',
+    address: 'Kampala, Uganda',
+    latitude: 0.3476,
+    longitude: 32.5825,
+    specialty_ingredients: ['Ugandan Curry', 'Chili Powder', 'Garlic Paste'],
+    contact_number: '+256 41 123456',
+    image_url: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'uganda-2',
+    name: 'Jo tasty wave spices',
+    address: 'Kampala, Uganda',
+    latitude: 0.3163,
+    longitude: 32.5811,
+    specialty_ingredients: ['Mixed Seasonings', 'Herbs', 'Honey'],
+    contact_number: '+256 41 234567',
+    image_url: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'uganda-3',
+    name: 'Great roasters spice',
+    address: 'Kampala, Uganda',
+    latitude: 0.3200,
+    longitude: 32.5900,
+    specialty_ingredients: ['Roasted Coffee Beans', 'Spiced Tea', 'Vanilla'],
+    contact_number: '+256 41 345678',
+    image_url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
